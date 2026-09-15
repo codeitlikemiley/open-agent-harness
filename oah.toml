@@ -1,0 +1,29 @@
+[server]
+# Uncommon port so it does not collide with typical Next/Vite/gateway defaults.
+bind = "0.0.0.0:43147"
+public_base = "http://127.0.0.1:43147"
+
+[store]
+backend = "sqlite"
+path = ".oah/dev.db"
+
+[gateway]
+# Leave empty to run the built-in MockModel (debug/demo only).
+# Production: point at hexuria/open-ai-gateway and set OAH_GATEWAY__KEY.
+url = ""
+key = ""
+
+[model]
+default = "mock/scripted"
+thinking = "off"
+max_output_tokens = 4096
+
+[limits]
+max_attempts = 10
+timeout_ms = 3600000
+max_turns = 32
+tool_output_bytes = 262144
+
+[observability]
+json_logs = false
+content_capture = false

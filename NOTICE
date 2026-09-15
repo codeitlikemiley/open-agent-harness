@@ -1,0 +1,20 @@
+open-agent-harness
+Copyright 2026 hexuria
+
+This product is MIT-licensed. Portions of its specification, record
+vocabulary, HTTP stream protocol, recovery classifier, compaction prompt
+structure, and store-contract scenarios are a specification-first port of
+Flue (https://github.com/withastro/flue), which is licensed under the
+Apache License, Version 2.0.
+
+Flue
+Copyright contributors to the Flue project
+Licensed under the Apache License, Version 2.0
+https://www.apache.org/licenses/LICENSE-2.0
+
+You may not use "Flue" in crate or product names. "Flue-compatible protocol"
+is descriptive use only.
+
+The agent loop semantics follow the documented behaviour of
+@earendil-works/pi-agent-core 0.83.0 (MIT), re-implemented from the
+published contract rather than copied source.
