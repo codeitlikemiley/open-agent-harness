@@ -194,7 +194,7 @@ fn reduce_record(state: &mut FoldState, record: &Record) -> Result<()> {
             tag_name,
         } => {
             let tag = tag_name.as_deref().unwrap_or("signal");
-            let mut xml = format!("< {tag} type=\"{}\"", escape_attr(signal_type));
+            let mut xml = format!("\u003c{tag} type=\"{}\"", escape_attr(signal_type));
             if let Some(Value::Object(map)) = attributes {
                 for (k, v) in map {
                     let val = match v {
@@ -206,7 +206,7 @@ fn reduce_record(state: &mut FoldState, record: &Record) -> Result<()> {
             }
             xml.push('>');
             xml.push_str(&escape_text(body));
-            xml.push_str(&format!("</{tag}>"));
+            xml.push_str(&format!("\u003c/{tag}>"));
             state.messages.push(ProjectedMessage {
                 id: record.id.to_string(),
                 role: "user".into(),
