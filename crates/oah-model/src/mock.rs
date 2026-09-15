@@ -196,7 +196,7 @@ fn truncate(s: &str, max: usize) -> String {
         while end > 0 && !s.is_char_boundary(end) {
             end -= 1;
         }
-        format!("{}\u2026", &s[..end])
+        format!("{}...", &s[..end])
     }
 }
 
