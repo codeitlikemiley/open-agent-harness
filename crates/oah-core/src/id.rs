@@ -25,7 +25,7 @@ macro_rules! prefixed_id {
                     Ok(Self(raw))
                 } else {
                     Err(CoreError::InvalidId(format!(
-                        "expected {}\u2026, got {raw}",
+                        "expected {}..., got {raw}",
                         $prefix
                     )))
                 }
