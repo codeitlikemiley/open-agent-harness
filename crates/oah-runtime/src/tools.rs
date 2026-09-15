@@ -208,7 +208,7 @@ fn cap_output(value: Value) -> Value {
         return value;
     }
     Value::String(format!(
-        "{}\u2026\n[truncated at {OUTPUT_CAP} bytes]",
+        "{}...\n[truncated at {OUTPUT_CAP} bytes]",
         &raw[..OUTPUT_CAP.min(raw.len())]
     ))
 }
