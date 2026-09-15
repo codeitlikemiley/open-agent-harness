@@ -1,0 +1,18 @@
+[package]
+name = "oah-skills"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "SKILL.md parse, skill:<name>:<sha16> naming, progressive disclosure"
+
+[dependencies]
+hex.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

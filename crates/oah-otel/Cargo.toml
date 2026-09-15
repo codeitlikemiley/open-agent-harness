@@ -1,0 +1,15 @@
+[package]
+name = "oah-otel"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Observability helpers: redaction, content-capture off, histograms"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,6 @@
+{
+  "streamUrl": "http://127.0.0.1:43147/agents/support-desk/golden?view=updates&offset=-1&live=sse",
+  "offset": "-1",
+  "submissionId": "sub_ik_or_ulid",
+  "uid": "uid_*"
+}
