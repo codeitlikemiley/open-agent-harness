@@ -249,18 +249,18 @@ pub fn clip_bytes(s: &str, max: usize) -> String {
     while end > 0 && !s.is_char_boundary(end) {
         end -= 1;
     }
-    format!("{}\n…(truncated)", &s[..end])
+    format!("{}\n...(truncated)", &s[..end])
 }
 
 pub fn clip_lines(s: &str, max_lines: usize, max_bytes: usize) -> String {
     let mut out = String::new();
     for (i, line) in s.lines().enumerate() {
         if i >= max_lines {
-            out.push_str("\n…(truncated, more lines)");
+            out.push_str("\n...(truncated, more lines)");
             break;
         }
         if out.len().saturating_add(line.len()) > max_bytes {
-            out.push_str("\n…(truncated)");
+            out.push_str("\n...(truncated)");
             break;
         }
         if !out.is_empty() {
