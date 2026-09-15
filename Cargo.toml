@@ -1,0 +1,97 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/oah-core",
+    "crates/oah-model",
+    "crates/oah-oag",
+    "crates/oah-loop",
+    "crates/oah-store",
+    "crates/oah-store-memory",
+    "crates/oah-store-sqlite",
+    "crates/oah-store-postgres",
+    "crates/oah-store-conformance",
+    "crates/oah-sandbox",
+    "crates/oah-skills",
+    "crates/oah-mcp",
+    "crates/oah-schedules",
+    "crates/oah-channels",
+    "crates/oah-otel",
+    "crates/oah-runtime",
+    "crates/oah-http",
+    "crates/oah-host-native",
+    "crates/oah-host-cloudflare",
+    "crates/oah",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+license = "MIT"
+authors = ["hexuria"]
+repository = "https://github.com/codeitlikemiley/open-agent-harness"
+publish = false
+
+[workspace.dependencies]
+oah-core = { path = "crates/oah-core" }
+oah-model = { path = "crates/oah-model" }
+oah-oag = { path = "crates/oah-oag" }
+oah-loop = { path = "crates/oah-loop" }
+oah-store = { path = "crates/oah-store" }
+oah-store-memory = { path = "crates/oah-store-memory" }
+oah-store-sqlite = { path = "crates/oah-store-sqlite" }
+oah-store-postgres = { path = "crates/oah-store-postgres" }
+oah-store-conformance = { path = "crates/oah-store-conformance" }
+oah-sandbox = { path = "crates/oah-sandbox" }
+oah-skills = { path = "crates/oah-skills" }
+oah-mcp = { path = "crates/oah-mcp" }
+oah-schedules = { path = "crates/oah-schedules" }
+oah-channels = { path = "crates/oah-channels" }
+oah-otel = { path = "crates/oah-otel" }
+oah-runtime = { path = "crates/oah-runtime" }
+oah-http = { path = "crates/oah-http" }
+oah-host-native = { path = "crates/oah-host-native" }
+oah-host-cloudflare = { path = "crates/oah-host-cloudflare" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+ulid = { version = "1", features = ["serde"] }
+sha2 = "0.10"
+hex = "0.4"
+regex = "1"
+bytes = "1"
+futures = "0.3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time", "signal", "io-util", "fs", "process"] }
+hmac = "0.12"
+subtle = "2"
+tokio-util = { version = "0.7", features = ["rt"] }
+async-trait = "0.1"
+axum = { version = "0.8", features = ["macros", "json"] }
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "fs"] }
+http = "1"
+http-body-util = "0.1"
+hyper = "1"
+clap = { version = "4", features = ["derive", "env"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "fmt"] }
+toml = "0.8"
+schemars = { version = "0.8", features = ["derive"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+rusqlite = { version = "0.32", features = ["bundled", "blob"] }
+serde_yaml = "0.9"
+indexmap = { version = "2", features = ["serde"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
