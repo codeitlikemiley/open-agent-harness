@@ -1,0 +1,21 @@
+[package]
+name = "oah-store-memory"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "In-memory Store adapter for tests and single-process hosts"
+
+[dependencies]
+async-trait.workspace = true
+oah-core.workspace = true
+oah-store.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+oah-store-conformance.workspace = true
+
+[lints]
+workspace = true

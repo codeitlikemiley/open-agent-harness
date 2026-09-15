@@ -1,0 +1,22 @@
+[package]
+name = "oah-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Newtype ids, conversation records, pure reducer, and recovery classifier"
+
+[dependencies]
+hex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+ulid.workspace = true
+
+[dev-dependencies]
+proptest = "1"
+
+[lints]
+workspace = true
