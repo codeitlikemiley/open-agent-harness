@@ -1,0 +1,27 @@
+[package]
+name = "oah-store-sqlite"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "SQLite store (dev, CLI, single node)"
+
+[dependencies]
+async-trait.workspace = true
+oah-core.workspace = true
+oah-store.workspace = true
+rusqlite.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+oah-store-conformance.workspace = true
+tempfile = "3"
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,23 @@
+[package]
+name = "oah-store-postgres"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Postgres Store adapter with LISTEN/NOTIFY wake (opt-in DATABASE_URL)"
+
+[dependencies]
+async-trait.workspace = true
+oah-core.workspace = true
+oah-store.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tokio-postgres = { version = "0.7", features = ["with-serde_json-1"] }
+
+[dev-dependencies]
+oah-store-conformance.workspace = true
+
+[lints]
+workspace = true
