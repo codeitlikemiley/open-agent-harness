@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>open-agent-harness</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #171d26;
+      --ink: #e8eef6;
+      --muted: #8b98a8;
+      --line: #2a3441;
+      --accent: #6ee7b7;
+      --accent-2: #93c5fd;
+      --danger: #fca5a5;
+      --warn: #fcd34d;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+      font: 15px/1.45 "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; }
+    body { display: grid; grid-template-rows: auto 1fr; }
+    header {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--line); background: #121821;
+    }
+    header h1 { font-size: 1rem; font-weight: 650; margin: 0; letter-spacing: 0.01em; }
+    header p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+    .mark { color: var(--accent); }
+    main { display: grid; grid-template-columns: 280px 1fr; min-height: 0; }
+    aside { border-right: 1px solid var(--line); padding: 1rem; overflow: auto; }
+    aside h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin: 0 0 0.75rem; }
+    .agent {
+      padding: 0.7rem 0.8rem; border: 1px solid var(--line); border-radius: 10px;
+      margin-bottom: 0.6rem; cursor: pointer; background: var(--panel);
+    }
+    .agent.active { border-color: var(--accent); }
+    .agent strong { display: block; }
+    .agent span { color: var(--muted); font-size: 0.8rem; }
+    .chat { display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+    .meta { padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; }
+    .log { overflow: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; }
+    .msg { max-width: 720px; padding: 0.85rem 1rem; border-radius: 12px; background: var(--panel);
+      border: 1px solid var(--line); white-space: pre-wrap; }
+    .msg.user { align-self: flex-end; background: #1b2838; }
+    .msg .who { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin-bottom: 0.35rem; }
+    .tool { font-family: ui-monospace, monospace; font-size: 0.82rem; color: var(--accent-2); }
+    .empty { color: var(--muted); margin: auto; text-align: center; max-width: 28rem; }
+    form { display: flex; gap: 0.6rem; padding: 0.9rem 1.25rem; border-top: 1px solid var(--line); }
+    input, button {
+      font: inherit; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    }
+    input { flex: 1; padding: 0.7rem 0.85rem; }
+    button { padding: 0.7rem 1rem; background: #12352c; border-color: #1f6b56; color: var(--accent); cursor: pointer; }
+    button.ghost { background: transparent; color: var(--muted); }
+    .row { display: flex; gap: 0.5rem; align-items: center; }
+    .approvals { padding: 0 1.25rem 0.5rem; }
+    .card { border: 1px solid #5b4a1e; background: #2a230e; padding: 0.75rem 0.9rem; border-radius: 10px; }
+    @media (max-width: 800px) {
+      main { grid-template-columns: 1fr; }
+      aside { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1><span class="mark">oah</span> open-agent-harness</h1>
+      <p>support-desk demo. MockModel unless you set a gateway key.</p>
+    </div>
+    <div class="row">
+      <button class="ghost" type="button" id="newThread">New thread</button>
+    </div>
+  </header>
+  <main>
+    <aside>
+      <h2>Agents</h2>
+      <div id="agents"></div>
+    </aside>
+    <section class="chat">
+      <div class="meta" id="meta">Select an agent to start a conversation.</div>
+      <div class="approvals" id="approvals"></div>
+      <div class="log" id="log">
+        <div class="empty">Pick support-desk and send a ticket. MockModel calls lookup_ticket, then drafts a reply.</div>
+      </div>
+      <form id="form">
+        <input id="box" placeholder="Describe the ticket or ask the agent." autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+  <script>
+    const state = { agents: [], agent: null, id: randomId(), source: null };
+
+    function randomId() {
+      return "thread-" + Math.random().toString(36).slice(2, 8);
+    }
+
+    async function loadAgents() {
+      const r = await fetch("/agents");
+      const data = await r.json();
+      state.agents = data.agents || [];
+      const root = document.getElementById("agents");
+      root.innerHTML = "";
+      state.agents.forEach((a, i) => {
+        const el = document.createElement("div");
+        el.className = "agent" + (i === 0 ? " active" : "");
+        el.innerHTML = `<strong>${a.name}</strong><span>${a.description || ""}</span>`;
+        el.onclick = () => select(a.name, el);
+        root.appendChild(el);
+        if (i === 0) state.agent = a.name;
+      });
+      refreshMeta();
+      await refreshHistory();
+    }
+
+    function select(name, el) {
+      state.agent = name;
+      document.querySelectorAll(".agent").forEach(n => n.classList.remove("active"));
+      el.classList.add("active");
+      state.id = randomId();
+      refreshMeta();
+      document.getElementById("log").innerHTML = "";
+      refreshHistory();
+    }
+
+    function refreshMeta() {
+      document.getElementById("meta").textContent =
+        state.agent ? `agents/${state.agent}/${state.id}` : "No agent selected";
+    }
+
+    document.getElementById("newThread").onclick = () => {
+      state.id = randomId();
+      document.getElementById("log").innerHTML = "";
+      refreshMeta();
+    };
+
+    async function refreshHistory() {
+      if (!state.agent) return;
+      const r = await fetch(`/agents/${state.agent}/${state.id}?view=history`);
+      if (!r.ok) return;
+      const snap = await r.json();
+      renderMessages(snap.messages || []);
+      await loadApprovals();
+    }
+
+    function renderMessages(messages) {
+      const log = document.getElementById("log");
+      log.innerHTML = "";
+      if (!messages.length) {
+        log.innerHTML = `<div class="empty">No messages yet. Try: Customer cannot export invoices, ticket 42</div>`;
+        return;
+      }
+      for (const m of messages) {
+        const div = document.createElement("div");
+        div.className = "msg " + (m.role === "user" ? "user" : "");
+        const who = document.createElement("div");
+        who.className = "who";
+        who.textContent = m.role;
+        div.appendChild(who);
+        for (const p of m.parts || []) {
+          const block = document.createElement("div");
+          if (p.type === "text") block.textContent = p.text;
+          else if (p.type === "dynamic-tool") {
+            block.className = "tool";
+            block.textContent = `${p.toolName} (${p.state})\n${JSON.stringify(p.input || p.output || {}, null, 2)}`;
+          } else if (p.type === "reasoning") block.textContent = p.text;
+          div.appendChild(block);
+        }
+        log.appendChild(div);
+      }
+      log.scrollTop = log.scrollHeight;
+    }
+
+    async function loadApprovals() {
+      const root = document.getElementById("approvals");
+      root.innerHTML = "";
+      const r = await fetch(`/agents/${state.agent}/${state.id}/approvals`);
+      if (!r.ok) return;
+      const data = await r.json();
+      for (const a of data.approvals || []) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<strong>Approval needed.</strong> ${a.tool}<br/>${a.reason}`;
+        const yes = document.createElement("button");
+        yes.textContent = "Approve";
+        yes.onclick = () => answer(a, true);
+        const no = document.createElement("button");
+        no.className = "ghost";
+        no.textContent = "Deny";
+        no.onclick = () => answer(a, false);
+        card.appendChild(document.createElement("br"));
+        card.appendChild(yes);
+        card.appendChild(no);
+        root.appendChild(card);
+      }
+    }
+
+    async function answer(a, approved) {
+      await fetch(`/agents/${state.agent}/${state.id}/approvals/${a.toolCallId}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ approved }),
+      });
+      setTimeout(refreshHistory, 400);
+    }
+
+    document.getElementById("form").onsubmit = async (e) => {
+      e.preventDefault();
+      const text = document.getElementById("box").value.trim();
+      if (!text || !state.agent) return;
+      document.getElementById("box").value = "";
+      const r = await fetch(`/agents/${state.agent}/${state.id}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ type: "user", text }),
+      });
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({ error: { message: r.statusText } }));
+        alert(err.error?.message || "send failed");
+        return;
+      }
+      listen();
+      setTimeout(refreshHistory, 300);
+    };
+
+    function listen() {
+      if (state.source) state.source.close();
+      state.source = new EventSource(
+        `/agents/${state.agent}/${state.id}?view=updates&offset=-1&live=sse`
+      );
+      state.source.addEventListener("data", () => refreshHistory());
+      state.source.addEventListener("control", () => loadApprovals());
+    }
+
+    loadAgents().catch((err) => {
+      document.getElementById("log").innerHTML =
+        `<div class="empty">Could not load agents: ${err}</div>`;
+    });
+  </script>
+</body>
+</html>
