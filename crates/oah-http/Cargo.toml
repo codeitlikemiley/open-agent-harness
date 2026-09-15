@@ -1,0 +1,36 @@
+[package]
+name = "oah-http"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "HTTP routes for Flue v1 snapshots, SSE updates, and the demo console"
+
+[dependencies]
+axum.workspace = true
+bytes.workspace = true
+futures.workspace = true
+oah-channels.workspace = true
+oah-core.workspace = true
+oah-mcp.workspace = true
+oah-runtime.workspace = true
+oah-schedules.workspace = true
+oah-store.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+ulid.workspace = true
+
+[dev-dependencies]
+http-body-util.workspace = true
+oah-model.workspace = true
+oah-store-memory.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true
